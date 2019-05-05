@@ -1,0 +1,22 @@
+{
+  "manifest_version": 2,
+  "name": "Sheet Converter.",
+  "version": "0.0.1",
+  "description": "Sheet Converter.",
+  "author": "yama-dev",
+  "icons": {
+    "128": "yama-dev.png"
+  },
+  "content_scripts": [
+    {
+      "matches": ["https://*/*","http://*/*"],
+      "js": ["./js/app.js"]
+    }
+  ],
+  "browser_action": {
+    "default_popup": "./html/popup.html"
+  },
+  "permissions": [
+    "tabs"
+  ]
+}
