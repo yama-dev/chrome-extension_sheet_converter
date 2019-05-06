@@ -13,3 +13,9 @@ elemBtnEncode.addEventListener('click', (e) => {
   alert('build');
 });
 
+function handleDownloadJson() {
+  var content = <?= getDataJson(); ?>;
+  var blob = new Blob([ content ], { "type" : "application/json"});
+  document.getElementById("download").href = window.URL.createObjectURL(blob);
+}
+
