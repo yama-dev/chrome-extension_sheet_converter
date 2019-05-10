@@ -12,20 +12,50 @@ chrome.tabs.getSelected(null, function(tab){
  * Make Json Data.
  */
 function getDataJson(str) {
+
   // Set Config.
   let dataFix = '';
   let keyList = [];
   let keyListLength = 0;
   let dataList = [];
 
-  let columnLast = 5;
+  let _d = '';
+  let _d_ary = [];
+
+  // 行頭の不可視文字を削除
+  _d = String(str).replace(/\s*/, '');
 
   // テキストデータを配列に変換
-  let _d = String(str).replace(/\"([^\t]*)\"/g, '$1');
-  console.log(_d);
+  _d = _d.replace(/\"([^\t]*)\"/g, '__1__$1__2__');
   _d = _d.split(/\n/);
-  console.log(_d);
-  dataList = _d.map((item)=>{
+
+  let _t = '';
+  let _t_flg = false;
+  _d.map((item)=>{
+    if(/__1__/.test(item)){
+      _t_flg = true;
+    }
+
+    if(_t_flg){
+      if(/__1__/.test(item)){
+        _t += item.replace('__1__','');
+      } else {
+        _t += '\n'+item.replace('__2__','');
+
+        if(/__2__/.test(item)){
+          _t_flg = false;
+          _d_ary.push(_t);
+          _t = '';
+        }
+      }
+    } else {
+      _d_ary.push(item);
+    }
+
+  });
+
+  // タブで配列に変換
+  dataList = _d_ary.map((item)=>{
     return item.split(/\t/);
   });
 
@@ -46,7 +76,6 @@ function getDataJson(str) {
     dataFix += '}';
     if(index != dataList.length-1) dataFix += ',';
   });
-
   dataFix += '],';
   dataFix += '\"total\":'+dataList.length+',';
   dataFix += '\"update\":\"'+new Date()+'\"'
@@ -74,10 +103,6 @@ let getData = ()=>{
   return _r;
 };
 
-document.querySelector('#inputPaste').focus();
-
-document.querySelector('form').inputPaste.value = getData();
-
 window.addEventListener("paste", function(event){
   setTimeout(function(e){
     document.querySelector('form').inputPaste.value = e.target.value;
@@ -90,11 +115,62 @@ window.addEventListener("paste", function(event){
  */
 let elemBtnEncode = document.querySelector('.btn-build');
 elemBtnEncode.addEventListener('click', (e) => {
-  let text = document.querySelector('form').inputPaste.value;
-
-  let content = getDataJson(text);
-  let blob = new Blob([ content ], { "type" : "application/json"});
-  document.getElementById("download").href = window.URL.createObjectURL(blob);
 });
 
+let APP = new Vue({
+  el: '#app',
+  data: {
+    dateObj: new Date(),
+    date: '',
+    inputPaste: getData(),
+    link: {
+      download: 'data.json',
+      href: {
+        json: '#'
+      }
+    }
+  },
+  watch: {
+    inputPaste(str){
+      saveData(str);
+    }
+  },
+  created: function(){
+    this.date = this.dateObj.getFullYear()+'_'+this.dateObj.getMonth()+'_'+this.dateObj.getDate();
+    setTimeout(()=>{
+      document.querySelector('#inputPaste').focus();
+      document.querySelector('#inputPaste').select();
+    }, 300);
+  },
+  methods: {
+    getRandomStr: function(_length = 10){
+      let random = function(start, end){
+        return Math.floor(Math.random() * (end - start + 1)) + start;
+      };
+      let _chars = 'abcdefghijklmnopqrstuvwxyzABCDEFGHIJLKMNOPQRSTUVWXYZ0123456789';
+      let _r = '';
+      for (let i = 0; i < _length; ++i) {
+        _r += _chars[random(0, 61)];
+      }
+      return _r;
+    },
+    setDownloadFileName: function(){
+      this.link.download = this.date+'_'+this.getRandomStr(10)+'.json';
+    },
+    actionMakeFile: function(mode, e){
+      this.setDownloadFileName();
+
+      let content = getDataJson(this.inputPaste);
+      if(this.inputPaste.length == 0 || this.inputPaste == '' || content === null || content === ''){
+        e.preventDefault();
+        return false;
+      }
+
+      let blob = new Blob([ content ], { "type" : "application/json"});
+      this.link.href.json = window.URL.createObjectURL(blob);
+    }
+  }
+})
+
 }());
+
