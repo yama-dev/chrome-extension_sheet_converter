@@ -27,11 +27,27 @@
     <form>
       <div class="form-group">
         <label for="inputPaste">テキストエリア</label>
-        <textarea type="text" class="form-control" id="inputPaste" name="inputPaste" placeholder="CTRL + V" rows="4"></textarea>
+        <textarea
+          type="text"
+          class="form-control"
+          id="inputPaste"
+          name="inputPaste"
+          placeholder="CTRL + V"
+          rows="4"
+          v-model="inputPaste"
+          ></textarea>
       </div>
     </form>
 
-    <div><a id="download" class="btn btn-outline-secondary btn-build" href="#" download="data.json">json形式でダウンロード</a></div>
+    <div>
+      <a
+        id="download"
+        class="btn btn-outline-secondary btn-build"
+        v-bind:href="link.href.json"
+        v-bind:download="link.download"
+        v-on:click="actionMakeFile('json',$event)"
+        >json形式でダウンロード</a>
+    </div>
 
     <p class="c-copy text-right" style="font-size: 10px;">&copy; @yama-dev</p>
 
