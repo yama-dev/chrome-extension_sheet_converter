@@ -4,6 +4,7 @@
   "version": "0.0.1",
   "description": "Sheet Converter.",
   "author": "yama-dev",
+  "homepage_url": "https://github.com/yama-dev/",
   "icons": {
     "128": "yama-dev.png"
   },
@@ -17,6 +18,7 @@
     "default_popup": "./html/popup.html"
   },
   "permissions": [
-    "tabs"
+    "tabs",
+    "storage"
   ]
 }
