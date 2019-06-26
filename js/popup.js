@@ -2,8 +2,8 @@
 chrome.tabs.getSelected(null, function(tab){
   chrome.tabs.sendMessage(tab.id, {title:''}, function(response) {
   });
-  document.querySelector('body').style.width = (tab.width*0.6) + 'px';
-  document.querySelector('body').style.minHeight = (tab.height*0.6) + 'px';
+  document.querySelector('body').style.width = (tab.width*0.4) + 'px';
+  document.querySelector('body').style.minHeight = (tab.height*0.4) + 'px';
 });
 
 (function(){
